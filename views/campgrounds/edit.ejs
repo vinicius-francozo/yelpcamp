@@ -2,7 +2,7 @@
 <div class="row">
     <h1 class="text-center">Editar Campground</h1>
     <div class="col-md-6 offset-md-3">
-        <form action="/campgrounds/<%=campground._id%>?_method=PUT" method="POST" novalidate class="validated-form"
+        <form action="/campgrounds/<%=campground.id%>?_method=PUT" method="POST" novalidate class="validated-form"
             enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label" for="title">Título</label>
@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <% campground.images.forEach(function(img, i) {  %>
+                <% campground.Images.forEach(function(img, i) {  %>
 
                 <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="imagem do campground">
                 <div class="form-check-inline">
@@ -64,7 +64,7 @@
                 <button class="btn btn-info">Atualizar Campground</button>
             </div>
         </form>
-        <a href="/campgrounds/<%= campground._id%>">Voltar para o Campground</a>
+        <a href="/campgrounds/<%= campground.id%>">Voltar para o Campground</a>
 
     </div>
 </div>

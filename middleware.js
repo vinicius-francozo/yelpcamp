@@ -1,7 +1,6 @@
 const {campgroundSchema, reviewSchema} = require('./schemas.js')
 const ExpressError = require('./utils/ExpressError')
-const Campground = require('./models/campground')
-const Review = require('./models/review')
+const { Campgrounds, Reviews } = require('./models') 
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()){
@@ -41,8 +40,8 @@ module.exports.validateReview = (req, res, next) => {
 
 module.exports.isReviewAuthor = async (req, res, next) => {
     const {id, reviewId} = req.params
-    const review = await Review.findById(reviewId)
-    if (!review.author.equals(req.user._id)){
+    const review = (await Reviews.findByPk(reviewId)).toJSON()
+    if (!review.authorId == req.user.id){
         req.flash('error', 'Você não ter permissão para fazer isso')
         return res.redirect(`/campgrounds/${id}`)
     }
@@ -51,8 +50,8 @@ module.exports.isReviewAuthor = async (req, res, next) => {
 
 module.exports.isAuthor = async (req, res, next) => {
     const {id} = req.params
-    const campground = await Campground.findById(id)
-    if (!campground.author.equals(req.user._id)){
+    const campground = (await Campgrounds.findByPk(id)).toJSON()
+    if (!campground.authorId == req.user.id){
         req.flash('error', 'Você não tem permissão para fazer isso')
         return res.redirect(`/campgrounds/${id}`)
     }

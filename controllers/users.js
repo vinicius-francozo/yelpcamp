@@ -1,21 +1,24 @@
-const User = require('../models/user')
+const {Users} = require('../models')
 
 module.exports.renderRegister = (req, res) => {
     res.render('users/register')
 }
 
-module.exports.register = async (req, res) => {
+module.exports.register = async (req, res, next) => {
     try{
         const {email, username, password} = req.body
-        const user = new User({email, username})
-        const registeredUser = await User.register(user, password)
-        req.login(registeredUser, err => {
+        const user = Users.build({email, username})
+        await Users.register(user, password, function(err, user){
             if (err) return next(err)
-            req.flash('success', 'Bem-vindo ao YelpCamp')
-            res.redirect('/campgrounds')
+
+            req.login(user, err => {
+                if (err) return next(err)
+                req.flash('success', 'Bem-vindo ao YelpCamp')
+                res.redirect('/campgrounds')
+            })
         })
-    } catch{
-        req.flash('error', e.message)
+    } catch(err){
+        req.flash('error', err.message)
         res.redirect('register')
     }
 }

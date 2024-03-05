@@ -1,34 +1,18 @@
-const mongoose = require('mongoose');
 const cities = require('./cities');
 const { places, descriptors } = require('./seedHelpers');
-const Campground = require('../models/campground');
-
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-});
-
-const db = mongoose.connection;
-
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-    console.log("Database connected");
-});
+const {Campgrounds, Users} = require('../models')
 
 const sample = array => array[Math.floor(Math.random() * array.length)];
 
 
 const seedDB = async () => {
-    await Campground.deleteMany({});
     for (let i = 0; i < 50; i++) {
         const price = Math.floor(Math.random() * 20) + 10
         const random1000 = Math.floor(Math.random() * 1000);
-        const camp = new Campground({
-            author: '65e1f7fe6f9ea61e23f6394a',
+        const camp = await Campgrounds.create({
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
-            images: [
+            Images: [
                 {
                     url: 'https://res.cloudinary.com/dwbwmfpvj/image/upload/v1709224514/cld-sample-2.jpg',
                     filename: 'cld-sample-2'
@@ -36,11 +20,14 @@ const seedDB = async () => {
             ],
             description: 'Lorem ipsum dolor sit',
             price
+        }, {
+            include: [{
+                association: Campgrounds.Images
+            }]
         })
-        await camp.save();
+        const author = await Users.findByPk(1)
+        camp.setAuthor(author)
     }
 }
 
-seedDB().then(() => {
-    mongoose.connection.close();
-})
+seedDB()

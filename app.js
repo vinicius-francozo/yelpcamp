@@ -4,7 +4,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express')
 const path = require('path')
-const mongoose = require('mongoose')
 const ejsMate = require('ejs-mate')
 const methodOverride = require('method-override')
 const ExpressError = require('./utils/ExpressError')
@@ -12,26 +11,11 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
-const User = require('./models/user')
 const userRoutes = require('./routes/users')
 const campgrounds = require('./routes/campground')
 const reviews = require('./routes/reviews')
 const helmet = require('helmet')
-
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp'
-
-mongoose.connect(dbUrl, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-})
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-    console.log("Database connected");
-})
+const db = require('./models')
 
 const app = express()
 
@@ -108,9 +92,9 @@ app.use(
 
 app.use(passport.initialize())
 app.use(passport.session())
-passport.use(new LocalStrategy(User.authenticate()))
-passport.serializeUser(User.serializeUser())
-passport.deserializeUser(User.deserializeUser())
+passport.use(new LocalStrategy(db.Users.authenticate()))
+passport.serializeUser(db.Users.serializeUser())
+passport.deserializeUser(db.Users.deserializeUser())
 
 app.use((req, res, next) => {
     res.locals.success = req.flash('success')

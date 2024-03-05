@@ -4,14 +4,14 @@
     <div class="col-6">
         <div id="campgroundCarousel" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
-                <% campground.images.forEach((img, i) => {  %>
+                <% campground.Images.forEach((img, i) => {  %>
                 <div class="carousel-item <%= i === 0 ? 'active' : ''%>">
                     <img src="<%= img.url%>" class="d-block w-100" alt="imagem do campground">
                 </div>
                 <% }) %>
 
             </div>
-            <% if(campground.images.length > 1) {%>
+            <% if(campground.Images.length > 1) {%>
             <a class="carousel-control-prev" href="#campgroundCarousel" role="button" data-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="sr-only">Anterior</span>
@@ -33,10 +33,10 @@
                 <li class="list-group-item">Enviado por <%= campground.author.username%></li>
                 <li class="list-group-item">$<%= campground.price%>/noite</li>
             </ul>
-            <%  if( currentUser && campground.author.equals(currentUser._id))  {%>
+            <%  if( currentUser && campground.authorId == currentUser.id)  {%>
             <div class="card-body">
-                <a class="card-link btn btn-info" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
-                <form class="d-inline" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
+                <a class="card-link btn btn-info" href="/campgrounds/<%=campground.id%>/edit">Edit</a>
+                <form class="d-inline" action="/campgrounds/<%=campground.id%>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>
                 </form>
             </div>
@@ -50,7 +50,7 @@
     <div class="col-6">
         <% if(currentUser){ %>
         <h2>Deixe um Review</h2>
-        <form action="/campgrounds/<%=campground._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
+        <form action="/campgrounds/<%=campground.id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
             <fieldset class="starability-basic">
                 <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
                     aria-label="No rating." />
@@ -75,7 +75,7 @@
             <button class="btn btn-success">Enviar</button>
         </form>
         <% } %>
-        <% for(let review of campground.reviews) { %>
+        <% for(let review of campground.Reviews) { %>
         <div class="card mb-3 ">
             <div class="card-body">
                 <h5 class="card-title"> <%= review.author.username%></h5>
@@ -84,8 +84,8 @@
                 </p>
                 <!-- <h6 class="card-subtitle mb-2 text-muted">By <%= review.author.username%></h6> -->
                 <p class="card-text">Review: <%= review.body %></p>
-                <%  if( currentUser && review.author.equals(currentUser._id))  {%>
-                <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
+                <%  if( currentUser && review.author.id == currentUser.id)  {%>
+                <form action="/campgrounds/<%=campground.id%>/reviews/<%=review.id%>?_method=DELETE" method="POST">
                     <button class="btn btn-sm btn-danger">Deletar</button>
                 </form>
                 <% } %>
